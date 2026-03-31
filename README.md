@@ -1,68 +1,66 @@
-# Kerala Smart Farmer App
+# AgriPulse Kerala
 
-A comprehensive digital platform for Kerala's farming community, integrating IoT monitoring, AI-driven diagnostics, and community resource management.
+**Live Website:** [https://remix-agripulse-kerala-796850648989.us-west1.run.app](https://remix-agripulse-kerala-796850648989.us-west1.run.app)
 
-## Features
+## Problem Statement
+Farmers in Kerala often struggle with timely crop disease identification, lack of real-time monitoring for soil and environmental conditions, and difficulty in accessing up-to-date market prices and agricultural resources. Traditional farming methods lack the data-driven insights needed to optimize yields and manage resources efficiently in a changing climate.
 
-### 1. AI Crop Diagnosis
-- Upload or capture photos of crops to get instant health reports.
-- Powered by Gemini AI for accurate disease identification and treatment suggestions.
-- Maintains a history of previous diagnoses for long-term tracking.
+## Project Description
+AgriPulse Kerala is a comprehensive digital platform designed to empower the agricultural community with modern technology. It integrates:
+- **AI-Powered Diagnostics:** Instant identification of crop diseases using computer vision.
+- **Interactive Farm Mapping:** A unique "pencil sketch" style interface for farmers to map their fields and manage IoT device placements.
+- **IoT Integration:** Real-time monitoring of soil moisture, temperature, and humidity via connected sensors.
+- **AI Farming Assistant:** A specialized chatbot that provides expert agricultural advice while maintaining a strict focus on farming topics.
+- **Market Hub:** A centralized resource for tracking market prices, finding Krishi Bhavans, and accessing seed banks.
+- **Smart Calendar:** Automated crop management scheduling to ensure timely planting, fertilizing, and harvesting.
 
-### 2. Interactive Farm Map (Pencil Sketch Style)
-- Draw and define your farm areas using a unique hand-drawn pencil sketch aesthetic.
-- Directly input field names and crop types on the map.
-- Calculate area size automatically.
-- Place and monitor IoT devices (sensors, valves) on your farm layout.
+---
 
-### 3. AI Farming Assistant
-- Dedicated chat interface for agricultural expert advice.
-- Specialized in farming topics, crop management, and sustainable practices.
-- Blocks non-farming related queries to stay focused on your agricultural needs.
+## Google AI Usage
+### Tools / Models Used
+- **Gemini 3 Flash:** Powering the AI Crop Diagnosis and the specialized AI Farming Assistant.
+- **Gemini 3 Pro:** Used for complex reasoning in Soil Health Analysis and generating localized Crop Calendars.
 
-### 4. Smart Insights & IoT Monitoring
-- Real-time monitoring of soil moisture, temperature, and humidity.
-- Historical data visualization using interactive charts.
-- Automated health scores and alerts based on sensor data.
+### How Google AI Was Used
+- **Crop Disease Diagnosis:** Users upload photos of affected crops. The Gemini model analyzes the visual data to identify potential diseases and provides detailed treatment recommendations.
+- **Specialized AI Assistant:** A custom-tuned chat interface that uses system instructions to act as a professional agricultural expert. It is programmed to provide high-quality farming advice while politely declining non-agricultural queries.
+- **Soil Health Insights:** The AI processes soil test parameters (pH, Nitrogen, Phosphorus, Potassium) to generate personalized organic and chemical fertilizer recommendations tailored to specific crops.
+- **Agricultural Planning:** Gemini helps generate optimized crop calendars based on seasonal data and specific crop requirements.
 
-### 5. Community Resource Hub
-- Find nearby Markets, Krishi Bhavans, and Seed Banks.
-- Real-time price tracking for major crops (Coconut, Rubber, Banana).
-- User reviews and contact information for local resources.
+---
 
-### 6. Crop Calendar
-- Plan and track your farming activities (Planting, Harvesting, Fertilizing).
-- Visual monthly calendar view for easy task management.
+## Proof of Google AI Usage
+Attach screenshots in a `/proof` folder:
 
-## Tech Stack
-- **Frontend:** React, Tailwind CSS, Lucide Icons, Framer Motion.
-- **Canvas/Mapping:** Konva.js for interactive farm layouts.
-- **Backend:** Firebase (Firestore, Authentication).
-- **AI Integration:** Google Gemini API for diagnostics and chat assistance.
-- **Charts:** Recharts for data visualization.
+![AI Proof](./proof/screenshot1.png)
 
-## Setup Instructions
+---
 
-1. **Environment Variables:**
-   - Create a `.env` file based on `.env.example`.
-   - Add your `GEMINI_API_KEY`.
-   - Configure your Firebase project in `firebase-applet-config.json`.
+## Screenshots 
+Add project screenshots:
 
-2. **Installation:**
-   ```bash
-   npm install
-   ```
+![Screenshot1](./assets/screenshot1.png)  
+![Screenshot2](./assets/screenshot2.png)
 
-3. **Development:**
-   ```bash
-   npm run dev
-   ```
+---
 
-4. **Sample Data:**
-   - Log in to the app.
-   - Navigate to the **Market Hub** tab.
-   - Click the **Seed Data** button to populate your account with initial sample data.
+## Demo Video
+[Watch Demo](https://drive.google.com/file/d/your-video-id/view)
 
-## Security
-- Firestore Security Rules are implemented to ensure data privacy and ownership.
-- Users can only access and modify their own farm data and resources.
+---
+
+## Installation Steps
+
+```bash
+# Clone the repository
+git clone <your-repo-link>
+
+# Go to project folder
+cd agri-pulse-kerala
+
+# Install dependencies
+npm install
+
+# Run the project
+npm run dev
+```
