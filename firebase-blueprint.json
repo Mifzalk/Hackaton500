@@ -1,0 +1,195 @@
+{
+  "entities": {
+    "Market": {
+      "title": "Market",
+      "description": "A market, Krishi Bhavan, or Seed Bank resource.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Name of the resource" },
+        "type": { "type": "string", "enum": ["market", "bhavan", "seedbank"], "description": "Type of resource" },
+        "location": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          },
+          "required": ["lat", "lng"]
+        },
+        "prices": { "type": "object", "description": "Market prices (optional)" },
+        "status": { "type": "string", "description": "Current status (e.g., Open, Closed)" },
+        "operatingHours": { "type": "string", "description": "Operating hours" },
+        "contactPerson": { "type": "string", "description": "Contact person name" },
+        "contact": { "type": "string", "description": "Contact phone number" },
+        "services": { "type": "array", "items": { "type": "string" }, "description": "Services offered" },
+        "variety": { "type": "array", "items": { "type": "string" }, "description": "Seed varieties (for seed banks)" },
+        "reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "user": { "type": "string" },
+              "rating": { "type": "number" },
+              "comment": { "type": "string" }
+            },
+            "required": ["user", "rating", "comment"]
+          }
+        }
+      },
+      "required": ["name", "type", "location", "contact"]
+    },
+    "CalendarEvent": {
+      "title": "Calendar Event",
+      "description": "A farming task or event in the crop calendar.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the task" },
+        "date": { "type": "string", "format": "date", "description": "Date of the task (YYYY-MM-DD)" },
+        "description": { "type": "string", "description": "Details about the task" },
+        "type": { "type": "string", "enum": ["planting", "harvesting", "fertilizing", "irrigation", "other"], "description": "Category of the task" },
+        "authorId": { "type": "string", "description": "UID of the creator" }
+      },
+      "required": ["title", "date", "type", "authorId"]
+    },
+    "Diagnosis": {
+      "title": "Crop Diagnosis",
+      "description": "A record of a crop health analysis.",
+      "type": "object",
+      "properties": {
+        "image": { "type": "string", "description": "Base64 or URL of the crop image" },
+        "result": { "type": "string", "description": "Markdown result from AI analysis" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp of analysis" },
+        "authorId": { "type": "string", "description": "UID of the user" }
+      },
+      "required": ["image", "result", "createdAt", "authorId"]
+    },
+    "Field": {
+      "title": "Farm Field",
+      "description": "A specific area of land managed by the farmer.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Name of the field" },
+        "crop": { "type": "string", "description": "Primary crop grown in this field" },
+        "area": { "type": "number", "description": "Area in acres" },
+        "location": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          },
+          "required": ["lat", "lng"]
+        },
+        "authorId": { "type": "string", "description": "UID of the owner" }
+      },
+      "required": ["name", "crop", "area", "location", "authorId"]
+    },
+    "Device": {
+      "title": "IoT Device",
+      "description": "An IoT device managed by the farmer.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Hardware ID" },
+        "name": { "type": "string", "description": "Display name" },
+        "type": { "type": "string", "enum": ["sensor", "automated_system", "aerial_tech", "connectivity_hub", "integration_point"], "description": "Category of the device" },
+        "subType": { "type": "string", "description": "Specific type (e.g., Soil Moisture, Drip Irrigation)" },
+        "status": { "type": "string", "enum": ["online", "offline", "connecting"], "description": "Current status" },
+        "workingTime": { "type": "number", "description": "Total working hours" },
+        "onTime": { "type": "string", "description": "Scheduled on time (HH:mm)" },
+        "offTime": { "type": "string", "description": "Scheduled off time (HH:mm)" },
+        "batteryLevel": { "type": "number", "description": "Battery percentage (0-100)" },
+        "data": { "type": "object", "description": "Real-time data placeholders" },
+        "authorId": { "type": "string", "description": "UID of the owner" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp of creation" }
+      },
+      "required": ["id", "name", "type", "status", "authorId", "createdAt"]
+    },
+    "MapArea": {
+      "title": "Farm Map Area",
+      "description": "A polygon or rectangle representing a farming area on the 2D map.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "points": { "type": "array", "items": { "type": "number" }, "description": "Flat array of [x1, y1, x2, y2...]" },
+        "color": { "type": "string" },
+        "cropType": { "type": "string" },
+        "authorId": { "type": "string" }
+      },
+      "required": ["name", "points", "authorId"]
+    },
+    "MapDevicePlacement": {
+      "title": "Map Device Placement",
+      "description": "The position of a device on the 2D farm map.",
+      "type": "object",
+      "properties": {
+        "deviceId": { "type": "string", "description": "Reference to the Device docId" },
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "authorId": { "type": "string" }
+      },
+      "required": ["deviceId", "x", "y", "authorId"]
+    },
+    "MapConfig": {
+      "title": "Map Configuration",
+      "description": "Settings for the farm map, like background image.",
+      "type": "object",
+      "properties": {
+        "imageUrl": { "type": "string" },
+        "width": { "type": "number" },
+        "height": { "type": "number" },
+        "showGrid": { "type": "boolean" },
+        "authorId": { "type": "string" }
+      },
+      "required": ["authorId"]
+    },
+    "Insight": {
+      "title": "Total Insight",
+      "description": "Aggregated data for the farm, including profit and growth.",
+      "type": "object",
+      "properties": {
+        "month": { "type": "string", "description": "Month of the record (e.g., 2026-03)" },
+        "profit": { "type": "number" },
+        "growth": { "type": "number", "description": "Growth percentage" },
+        "weather": { "type": "string", "description": "Average weather condition" },
+        "authorId": { "type": "string" }
+      },
+      "required": ["month", "profit", "growth", "authorId"]
+    }
+  },
+  "firestore": {
+    "/markets/{marketId}": {
+      "schema": "Market",
+      "description": "Collection of agricultural resources."
+    },
+    "/calendar/{eventId}": {
+      "schema": "CalendarEvent",
+      "description": "User-specific crop calendar events."
+    },
+    "/diagnostics/{diagnosisId}": {
+      "schema": "Diagnosis",
+      "description": "History of crop health diagnoses."
+    },
+    "/fields/{fieldId}": {
+      "schema": "Field",
+      "description": "User's managed farm fields."
+    },
+    "/devices/{deviceId}": {
+      "schema": "Device",
+      "description": "User's managed IoT devices."
+    },
+    "/map_areas/{areaId}": {
+      "schema": "MapArea",
+      "description": "Farming areas on the 2D map."
+    },
+    "/map_devices/{placementId}": {
+      "schema": "MapDevicePlacement",
+      "description": "Device placements on the 2D map."
+    },
+    "/map_configs/{configId}": {
+      "schema": "MapConfig",
+      "description": "User-specific map settings."
+    },
+    "/insights/{insightId}": {
+      "schema": "Insight",
+      "description": "Aggregated farm data records."
+    }
+  }
+}

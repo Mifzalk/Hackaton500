@@ -1,0 +1,8 @@
+{
+  "name": "Remix: AgriPulse Kerala",
+  "description": "AI-driven agricultural platform for Kerala farmers featuring disease diagnosis, market intelligence, and weather-optimized planning.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}

@@ -1,0 +1,208 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: markets
+    // Document ID: auto-generated
+    // Fields:
+    //   - name: string (required)
+    //   - type: string (required, enum: market, bhavan, seedbank)
+    //   - location: map { lat: number, lng: number } (required)
+    //   - prices: map (optional)
+    //   - status: string (optional)
+    //   - operatingHours: string (optional)
+    //   - contactPerson: string (optional)
+    //   - contact: string (required)
+    //   - services: list (optional)
+    //   - variety: list (optional)
+    //   - reviews: list of maps { user: string, rating: number, comment: string } (optional)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (request.auth.token.email == "muhdmifzalk@gmail.com" || 
+         request.auth.token.email == "mifu6k@gmail.com" ||
+         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'));
+    }
+
+    function isValidMarket(data) {
+      return data.keys().hasAll(['name', 'type', 'location', 'contact']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.type in ['market', 'bhavan', 'seedbank'] &&
+             data.location is map && data.location.lat is number && data.location.lng is number &&
+             data.contact is string && data.contact.size() > 0 && data.contact.size() < 50 &&
+             (!('operatingHours' in data) || (data.operatingHours is string && data.operatingHours.size() < 100)) &&
+             (!('contactPerson' in data) || (data.contactPerson is string && data.contactPerson.size() < 100)) &&
+             (!('services' in data) || data.services is list) &&
+             (!('variety' in data) || data.variety is list) &&
+             (!('reviews' in data) || data.reviews is list) &&
+             (!('authorId' in data) || data.authorId is string) &&
+             (!('createdAt' in data) || data.createdAt is string);
+    }
+
+    function isValidCalendarEvent(data) {
+      return data.keys().hasAll(['title', 'date', 'type', 'authorId']) &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 100 &&
+             data.date is string && data.date.matches('^\\d{4}-\\d{2}-\\d{2}$') &&
+             data.type in ['planting', 'harvesting', 'fertilizing', 'irrigation', 'other'] &&
+             data.authorId == request.auth.uid &&
+             (!('description' in data) || (data.description is string && data.description.size() < 500));
+    }
+
+    function isValidDiagnosis(data) {
+      return data.keys().hasAll(['image', 'result', 'createdAt', 'authorId']) &&
+             data.image is string && data.image.size() > 0 &&
+             data.result is string && data.result.size() > 0 &&
+             data.createdAt is string &&
+             data.authorId == request.auth.uid;
+    }
+
+    function isValidField(data) {
+      return data.keys().hasAll(['name', 'crop', 'area', 'location', 'authorId']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.crop is string && data.crop.size() > 0 && data.crop.size() < 100 &&
+             data.area is number && data.area > 0 &&
+             data.location is map && data.location.lat is number && data.location.lng is number &&
+             data.authorId == request.auth.uid;
+    }
+
+    function isValidDevice(data) {
+      return data.keys().hasAll(['id', 'name', 'type', 'status', 'authorId', 'createdAt']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() < 100 &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.type in ['sensor', 'automated_system', 'aerial_tech', 'connectivity_hub', 'integration_point'] &&
+             data.status in ['online', 'offline', 'connecting'] &&
+             data.authorId == request.auth.uid &&
+             data.createdAt is string &&
+             (!('subType' in data) || (data.subType is string && data.subType.size() < 100)) &&
+             (!('workingTime' in data) || data.workingTime is number) &&
+             (!('onTime' in data) || data.onTime is string) &&
+             (!('offTime' in data) || data.offTime is string) &&
+             (!('batteryLevel' in data) || (data.batteryLevel is number && data.batteryLevel >= 0 && data.batteryLevel <= 100)) &&
+             (!('data' in data) || data.data is map);
+    }
+
+    function isValidMapArea(data) {
+      return data.keys().hasAll(['name', 'points', 'authorId']) &&
+             data.name is string && data.name.size() > 0 &&
+             data.points is list &&
+             data.authorId == request.auth.uid &&
+             (!('color' in data) || data.color is string) &&
+             (!('cropType' in data) || data.cropType is string);
+    }
+
+    function isValidMapDevicePlacement(data) {
+      return data.keys().hasAll(['deviceId', 'x', 'y', 'authorId']) &&
+             data.deviceId is string &&
+             data.x is number && data.y is number &&
+             data.authorId == request.auth.uid;
+    }
+
+    function isValidMapConfig(data) {
+      return data.keys().hasAll(['authorId']) &&
+             data.authorId == request.auth.uid &&
+             (!('imageUrl' in data) || data.imageUrl is string) &&
+             (!('width' in data) || data.width is number) &&
+             (!('height' in data) || data.height is number) &&
+             (!('showGrid' in data) || data.showGrid is bool);
+    }
+
+    function isValidInsight(data) {
+      return data.keys().hasAll(['month', 'profit', 'growth', 'authorId']) &&
+             data.month is string &&
+             data.profit is number &&
+             data.growth is number &&
+             data.authorId == request.auth.uid &&
+             (!('weather' in data) || data.weather is string) &&
+             (!('createdAt' in data) || data.createdAt is string);
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+    
+    match /markets/{marketId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && isValidMarket(request.resource.data);
+      allow update: if isAuthenticated() && isValidMarket(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /calendar/{eventId} {
+      allow read: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && isValidCalendarEvent(request.resource.data);
+      allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid) && isValidCalendarEvent(request.resource.data);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
+    }
+
+    match /diagnostics/{diagnosisId} {
+      allow read: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && isValidDiagnosis(request.resource.data);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
+    }
+
+    match /fields/{fieldId} {
+      allow read: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && isValidField(request.resource.data);
+      allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid) && isValidField(request.resource.data);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
+    }
+
+    match /devices/{deviceId} {
+      allow read: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && isValidDevice(request.resource.data);
+      allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid) && isValidDevice(request.resource.data);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
+    }
+
+    match /map_areas/{areaId} {
+      allow read: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && isValidMapArea(request.resource.data);
+      allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid) && isValidMapArea(request.resource.data);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
+    }
+
+    match /map_devices/{placementId} {
+      allow read: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && isValidMapDevicePlacement(request.resource.data);
+      allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid) && isValidMapDevicePlacement(request.resource.data);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
+    }
+
+    match /map_configs/{configId} {
+      allow read: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && isValidMapConfig(request.resource.data);
+      allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid) && isValidMapConfig(request.resource.data);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
+    }
+
+    match /insights/{insightId} {
+      allow read: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && isValidInsight(request.resource.data);
+      allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid) && isValidInsight(request.resource.data);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
+    }
+
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

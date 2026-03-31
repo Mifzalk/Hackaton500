@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+  --color-clay-bg: #e0e5ec;
+  --color-clay-blue: #2563eb;
+  --color-clay-green: #10b981;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-800 font-sans;
+  }
+}
+
+@layer components {
+  .clay-card {
+    @apply bg-white rounded-3xl shadow-sm border border-slate-100;
+  }
+
+  .clay-button {
+    @apply rounded-2xl transition-all duration-200 px-6 py-3 font-semibold shadow-sm hover:shadow-md active:scale-95;
+  }
+
+  .clay-inset {
+    @apply bg-slate-50 rounded-2xl border border-slate-100;
+  }
+}
+
+/* Simplified Utilities */
+.clay-shadow {
+  @apply shadow-lg;
+}
+
+.clay-shadow-sm {
+  @apply shadow-sm;
+}
+
+.clay-inner {
+  @apply bg-slate-50 border border-slate-100;
+}
+
