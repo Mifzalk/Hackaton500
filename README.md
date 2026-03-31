@@ -29,23 +29,8 @@ AgriPulse Kerala is a comprehensive digital platform designed to empower the agr
 
 ---
 
-## Proof of Google AI Usage
-Attach screenshots in a `/proof` folder:
-
-![AI Proof](./proof/screenshot1.png)
-
----
-
-## Screenshots 
-Add project screenshots:
-
-![Screenshot1](./assets/screenshot1.png)  
-![Screenshot2](./assets/screenshot2.png)
-
----
-
 ## Demo Video
-[Watch Demo](https://drive.google.com/file/d/your-video-id/view)
+[Watch Demo](https://drive.google.com/file/d/1pOjPqbdlHoV2_9U3cRx4LkFvO4sTOZBL/view?usp=drive_link)
 
 ---
 
@@ -53,7 +38,7 @@ Add project screenshots:
 
 ```bash
 # Clone the repository
-git clone <your-repo-link>
+git clone https://github.com/Mifzalk/Hackaton500.git
 
 # Go to project folder
 cd agri-pulse-kerala
